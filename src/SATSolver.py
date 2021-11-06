@@ -6,7 +6,7 @@ class SATSolver:
         self.ruleset_file = ruleset_file
         self.puzzle_file = puzzle_file
         self.board_size = board_size
-        self.puzzles = self.read_sudoku(self.puzzle_file)
+        self.set_rules_and_puzzle()
 
     def set_rules_and_puzzle(self):
         self.ruleset = self.dimacs_to_list(self.ruleset_file)
@@ -20,7 +20,10 @@ class SATSolver:
                     tokens = line.split()
                     ls.append(tokens[:-1])
         return ls
+    
+    def solve(self):
+        pass
 
 x = SATSolver('dimacs/rulesets/9-rules.txt', 'dimacs/puzzles/sudoku.txt')
-x.set_rules_and_puzzle()
-print(x.ruleset)
+
+print(x.puzzle)
