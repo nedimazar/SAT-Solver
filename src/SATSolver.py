@@ -1,5 +1,6 @@
 import sympy as sp
 from Literal import Literal
+from Model import Model
 class SATSolver:
 
 
@@ -13,6 +14,13 @@ class SATSolver:
         self.ruleset_file = ruleset_file
         self.puzzle_file = puzzle_file
         self.__set_rules_and_puzzle()
+        self.model = Model
+        self.clause_set = self.merge_sentences(self.ruleset, self.puzzle)
+
+    def merge_sentences(self, ruleset, puzzle):
+        clauses = [clause for clause in ruleset]
+        for x in puzzle: clauses.append(x)
+        return clauses
 
     def __set_rules_and_puzzle(self):
         """Reads the DIMACS files to get the rules and puzzle in memory.
@@ -33,9 +41,8 @@ class SATSolver:
         with open(dimacs_file, 'r') as input_file:
             for line in input_file.readlines():
                 if str.isnumeric(line[0]) or line[0] == '-':
-                    tokens = line.split()
-                    ls = self.get_symbols(tokens)
-                    print(ls)
+                    tokens = line.split()[:-1]
+                    ls.append(self.get_symbols(tokens))
         return ls
     
     def get_symbols(self, tokens):
@@ -45,9 +52,39 @@ class SATSolver:
         negated = '-' in token
         symbol = token.strip('-')
         return Literal(negated, symbol)
-    
-    def solve(self):
-        pass
 
-x = SATSolver('dimacs/rulesets/9-rules.txt', 'dimacs/puzzles/sudoku.txt')
-print(x.ruleset)
+
+    def simplify(self, S, p: Literal):
+        S = [clause for clause in S if p not in clause]
+        indexes = []
+        for i in range(0, len(S)):
+            for j in range(0, len(S[i])):
+                if p and S[i][j] == -p:
+                    indexes.append([i, j])
+        for i, j in indexes:
+            S[i].pop(j)
+        return S
+
+    '''
+    def satisfiable(self, S):
+        if len(S) == 0:
+            return "SAT"
+        while
+
+
+        S = []
+S.append([Literal(), Literal(), Literal()])
+S.append([Literal(), Literal(), Literal(True, 'x')])
+S.append([Literal(), Literal(True, 'x'), Literal()])
+S.append([Literal(), Literal(), Literal()])
+
+
+
+'''
+        
+
+        
+
+if __name__ == "__main__":
+    x = SATSolver('dimacs/rulesets/9-rules.txt', 'dimacs/puzzles/sudoku.txt')
+    print(x.ruleset)
