@@ -65,12 +65,16 @@ class SATSolver:
             S[i].pop(j)
         return S
 
-    '''
+    # TODO
+    # see https://www.cs.miami.edu/home/geoff/Courses/CSC648-12S/Content/DPLL.shtml
     def satisfiable(self, S):
         if len(S) == 0:
             return "SAT"
-        while
-
+        while self.contains_unit_clause(S) or self.contains_pure_literal(S):
+            p = self.next_unit_clause(S) 
+            if p and p in S and -p in S:
+                return "UNSAT"
+'''
 
         S = []
 S.append([Literal(), Literal(), Literal()])
