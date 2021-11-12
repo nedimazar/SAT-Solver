@@ -16,7 +16,7 @@ class KB:
     def contains_unit_clauses(self):
         return len(self.unit_index) > 0
     def contains_pure_literal(self):
-        return  len(self.pure_literals) > 0
+        return  len(self.pure_dict) > 0
 
     def next_p(self):
         if self.contains_unit_clauses():
@@ -26,15 +26,21 @@ class KB:
 
     def get_next_unit_clause(self):
         return self.clauses_copy[self.unit_index.pop()][0]
+        
     def get_next_pure_literal(self):
-        return self.pure_literals.pop()
+        for x in self.pure_dict:
+            if self.pure_dict[x] == 1:
+                self.pure_dict.pop(x)
+            else:
+                self.pure_dict[x] -= 1
+            return x
+        
 
     def magic(self, clauses):
         longest = 0
         shortest_index = {}
-        pure_literals = []
         unit_index = []
-        literal_set = set()
+        pure_dict = {}
 
         save = []
 
@@ -52,20 +58,15 @@ class KB:
             for j, literal in enumerate(clause):
                 save[i].append(literal)
 
-                pure_literals.append(literal)
-
-        for x in set(pure_literals):
-            if x in pure_literals and -x in pure_literals:
-                while x in pure_literals:
-                    pure_literals.pop(pure_literals.index(x))
-                while -x in pure_literals:
-                    pure_literals.pop(pure_literals.index(-x))
-                
-                
+                if literal not in pure_dict:
+                    if -literal not in pure_dict:
+                        pure_dict[literal] = 1
+                elif -literal not in pure_dict:
+                    pure_dict[literal] += 1      
                     
         self.clauses_copy = save
         self.longest = longest
-        self.pure_literals = pure_literals
+        self.pure_dict = pure_dict
         self.unit_index = unit_index
         
 

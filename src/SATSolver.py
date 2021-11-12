@@ -16,6 +16,7 @@ class SATSolver:
         self.__set_rules_and_puzzle()
         self.model = Model
         self.clauses = self.merge_sentences(self.ruleset, self.puzzle)
+        self.KB = KB(self.clauses)
 
     def merge_sentences(self, ruleset, puzzle):
         clauses = [clause for clause in ruleset]
@@ -59,7 +60,7 @@ class SATSolver:
 
     def simplify(self, S: KB, p: Literal):
         # Delete every clause in S containing p
-        S = KB([clause for clause in S.clauses if p not in clause])
+        S.clauses = [clause for clause in S.clauses if p not in clause]
 
         # Delete every occurence in S of -p
         indexes = []
@@ -68,19 +69,17 @@ class SATSolver:
                 if p and S.clauses[i][j] == -p:
                     indexes.append([i, j])
         for i, j in indexes:
-            #S[i].pop(j)
             S.clauses[i].pop(j)
         return S
 
     # TODO
     # see https://www.cs.miami.edu/home/geoff/Courses/CSC648-12S/Content/DPLL.shtml
-    def satisfiable(self, kb):
-        S = KB(kb)
+    def satisfiable(self, S):
         if len(S) == 0:
             return "SAT"
-        while S.contains_unit_clause() or S.contains_pure_literal():
+        while S.contains_unit_clauses() or S.contains_pure_literal():
             p = S.next_p()
-            if p and p in S and -p in S:
+            if p and p in S.clauses and -p in S.clauses:
                 return "UNSAT"
             else:
                 S = self.simplify(S, p)
@@ -103,4 +102,4 @@ S.append([Literal(), Literal(), Literal()])
 
 if __name__ == "__main__":
     x = SATSolver('dimacs/rulesets/9-rules.txt', 'dimacs/puzzles/sudoku.txt')
-    x.satisfiable(x.clauses)
+    print(x.satisfiable(x.KB))
