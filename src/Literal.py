@@ -31,6 +31,10 @@ class Literal:
 
     def __neg__(self):
         return Literal(not self.negated, self.symbol)
+
+    def abs(self):
+        return Literal(False, self.symbol)
+
 '''
 class Axiom(Literal):
     """The Axiom class is identical to the Literal class, we use this nomenclature to differenciate between literals that are given to be true and literals for which the truth value is to be determined. The truth value of an Axiom is static.
