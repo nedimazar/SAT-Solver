@@ -1,3 +1,4 @@
+sys.settrace
 from Literal import Literal
 from Model import Model
 from KB import KB
@@ -18,6 +19,7 @@ class SATSolver:
         self.__set_rules_and_puzzle()
         self.model = Model
         self.clauses = self.merge_sentences(self.ruleset, self.puzzle)
+        print(self.clauses)
         self.KB = KB(self.clauses)
 
     def merge_sentences(self, ruleset, puzzle):
@@ -30,6 +32,9 @@ class SATSolver:
         """
         self.ruleset = self.dimacs_to_list(self.ruleset_file)
         self.puzzle = self.dimacs_to_list(self.puzzle_file)
+        print(self.ruleset)
+        print(self.puzzle)
+
     
     def __build_indexing(self):
         self.S = KB(self.clauses)
@@ -116,5 +121,6 @@ S.append([Literal(), Literal(), Literal()])
         
 
 if __name__ == "__main__":
-    x = SATSolver('dimacs/rulesets/9-rules.txt', 'dimacs/puzzles/sudoku.txt')
+    #x = SATSolver('dimacs/rulesets/9-rules.txt', 'dimacs/puzzles/sudoku.txt')
+    x = SATSolver('dimacs/rulesets/dummy.txt', 'dimacs/puzzles/dummy.txt')
     print(x.satisfiable(x.KB))
