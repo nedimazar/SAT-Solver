@@ -18,6 +18,16 @@ class KB:
     def contains_pure_literal(self):
         return  len(self.pure_dict) > 0
 
+    def from_shortest_clause(self):
+        for x in range(self.longest + 1):
+            if x in self.shortest_index:
+                p = self.shortest_index[x].pop()
+                if len(self.shortest_index[x]) == 0:
+                    self.shortest_index.pop(x)
+                return p
+        return None
+
+
     def next_p(self):
         if self.contains_unit_clauses():
             return self.get_next_unit_clause()
@@ -26,7 +36,7 @@ class KB:
 
     def get_next_unit_clause(self):
         return self.clauses_copy[self.unit_index.pop()][0]
-        
+
     def get_next_pure_literal(self):
         for x in self.pure_dict:
             if self.pure_dict[x] == 1:
@@ -68,6 +78,7 @@ class KB:
         self.longest = longest
         self.pure_dict = pure_dict
         self.unit_index = unit_index
+        self.shortest_index = shortest_index
         
 
 if __name__ == "__main__":

@@ -1,6 +1,8 @@
 from Literal import Literal
 from Model import Model
 from KB import KB
+import sys
+sys.setrecursionlimit(10**6)
 
 class SATSolver:
 
@@ -85,7 +87,20 @@ class SATSolver:
                 S = self.simplify(S, p)
         if len(S) == 0:
             return "SAT"
+        p = S.from_shortest_clause()
+        if (self.satisfiable(self.simplify(S, p)) == "SAT"):
+            return "SAT"
+        else:
+            return (self.satisfiable(self.simplify(S, -p)))
 '''
+pick some literal p from a shortest clause in S;
+    if (DPLL(Simplify(S,p))=="satisfiable") { //----Assign it TRUE
+       return("satisfiable");
+    } else {
+       return(DPLL(Simplify(S,~p));           //----Assign it FALSE
+    }
+
+
 
         S = [] 
 S.append([Literal(), Literal(), Literal()])
