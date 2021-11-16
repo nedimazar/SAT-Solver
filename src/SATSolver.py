@@ -1,8 +1,8 @@
-sys.settrace
 from Literal import Literal
 from Model import Model
 from KB import KB
 import sys
+sys.settrace
 sys.setrecursionlimit(10**6)
 
 class SATSolver:
@@ -19,7 +19,7 @@ class SATSolver:
         self.__set_rules_and_puzzle()
         self.model = Model
         self.clauses = self.merge_sentences(self.ruleset, self.puzzle)
-        print(self.clauses)
+        #print(self.clauses)
         self.KB = KB(self.clauses)
 
     def merge_sentences(self, ruleset, puzzle):
@@ -32,8 +32,8 @@ class SATSolver:
         """
         self.ruleset = self.dimacs_to_list(self.ruleset_file)
         self.puzzle = self.dimacs_to_list(self.puzzle_file)
-        print(self.ruleset)
-        print(self.puzzle)
+        #print(self.ruleset)
+        #print(self.puzzle)
 
     
     def __build_indexing(self):

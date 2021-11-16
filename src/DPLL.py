@@ -1,4 +1,4 @@
-import sys, random
+import random
 from SATSolver import *
 
 def get_counter(formula):
@@ -101,10 +101,8 @@ def from_shortest_clause(formula):
 def satisfiable(formula):
     if len(formula) == 0:
         return "SAT"
-    #clauses = [clause for clause in formula.clauses]
     while contains_unit_clauses(formula) or contains_pure_literal(formula):
         p = next_p(formula)
-        #print("next p", p)
         if (p in formula.clauses) and (-p in formula.clauses):
             return "UNSAT"
         else:
@@ -116,6 +114,54 @@ def satisfiable(formula):
         return "SAT"
     else:
         return (satisfiable(simplify(formula, -p)))
+
+def satisfiable_DLCS(formula):
+    if len(formula) == 0:
+        return "SAT"
+    while contains_unit_clauses(formula) or contains_pure_literal(formula):
+        p = next_p(formula)
+        if (p in formula.clauses) and (-p in formula.clauses):
+            return "UNSAT"
+        else:
+            formula = simplify(formula, p)
+    if len(formula) == 0:
+        return "SAT"
+    (p, CP_bigger_than_CN) = get_largest_CPCN(formula)
+    
+    if CP_bigger_than_CN:
+        if (satisfiable_DLCS(simplify(formula, p)) == "SAT"):
+            return "SAT"
+        else:
+            return (satisfiable_DLCS(simplify(formula, -p)))
+    else:
+        if (satisfiable_DLCS(simplify(formula, -p)) == "SAT"):
+            return "SAT"
+        else:
+            return (satisfiable_DLCS(simplify(formula, p)))
+
+
+
+def get_total_count(item, sentences):
+    return sum([sentence.count(item) for sentence in sentences])
+
+def get_largest_CPCN(formula):
+    counts = {}
+    m = [None, -1, -1]
+    for x in formula:
+        for y in x:
+            if y.abs() in counts:
+                continue
+            else:
+                counts[y.abs()] = {'CP': get_total_count(Literal(False, y.symbol)),
+                                    'CN' : get_total_count(Literal(True, y.symbol))}
+                CP = counts[y.abs()]['CP']
+                CN = counts[y.abs()]['CN']
+
+                if CP + CN > m[1] + m[2]:
+                    m = [y.abs(), CP, CN]
+    return (m[0], m[1] > m[2])
+
+    
 
 # def unit_propagation(formula):
 #     unit_clauses = [c for c in formula.clauses if len(c) == 1]
@@ -156,8 +202,8 @@ def satisfiable(formula):
 
 def main():
     x = SATSolver('dimacs/rulesets/9-rules.txt', 'dimacs/puzzles/sudoku.txt')
-    solution = satisfiable(x.KB)
-    print("solution",solution)
+    solution = satisfiable_DLCS(x.KB)
+    print("solution", solution)
 
 
 if __name__ == '__main__':
