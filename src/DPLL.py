@@ -1,5 +1,8 @@
+import math
 import random
 from SATSolver import *
+from collections import defaultdict
+import operator
 
 def get_counter(formula):
     counter = {}
@@ -10,6 +13,7 @@ def get_counter(formula):
             else:
                 counter[literal] = 1
     return counter
+
 
 
 def get_pure_literals(formula):
@@ -139,7 +143,22 @@ def satisfiable_DLCS(formula):
         else:
             return (satisfiable_DLCS(simplify(formula, p)))
 
-
+def satisfiable_mom(formula):
+    if len(formula) == 0:
+        return "SAT"
+    while contains_unit_clauses(formula) or contains_pure_literal(formula):
+        p = next_p(formula)
+        if (p in formula.clauses) and (-p in formula.clauses):
+            return "UNSAT"
+        else:
+            formula = simplify(formula, p)
+    if len(formula) == 0:
+        return "SAT"
+    p = moms(formula)
+    if (satisfiable(simplify(formula, p)) == "SAT"):
+        return "SAT"
+    else:
+        return (satisfiable(simplify(formula, -p)))
 
 def get_total_count(item, sentences):
     return sum([sentence.count(item) for sentence in sentences])
@@ -160,6 +179,34 @@ def get_largest_CPCN(formula):
                 if CP + CN > m[1] + m[2]:
                     m = [y.abs(), CP, CN]
     return (m[0], m[1] > m[2])
+
+def get_clause_size(clause):
+    counter = 0
+    for literal in clause:
+        counter = counter + 1
+    return counter
+
+def get_most_occurent_literal(formula):
+    counter = get_counter(formula)
+    return max(counter.items(), key=operator.itemgetter(1))[0]
+
+def minClauses(clauses):
+    minClauses = [];
+    size = -1;
+    for clause in clauses:
+        clauseSize = get_clause_size(clause)
+        # Either the current clause is smaller
+        if size == -1 or clauseSize < size:
+            minClauses = [clause]
+            size = clauseSize
+        # Or it is of minimum size as well
+        elif clauseSize == size:
+            minClauses.append(clause)
+    return minClauses
+
+def moms(formula):
+    minc = minClauses(formula.clauses)
+    return get_most_occurent_literal(minc)
 
     
 
@@ -202,7 +249,7 @@ def get_largest_CPCN(formula):
 
 def main():
     x = SATSolver('dimacs/rulesets/9-rules.txt', 'dimacs/puzzles/sudoku.txt')
-    solution = satisfiable_DLCS(x.KB)
+    solution = satisfiable_mom(x.KB)
     print("solution", solution)
 
 
