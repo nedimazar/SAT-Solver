@@ -9,12 +9,16 @@ class KB:
         self.pure_dict = None
         self.unit_index = None
         self.magic(clauses)
+
+        self.pures = []
+        self.units = []
     
     def __len__(self):
         return len(self.clauses)
 
     def contains_unit_clauses(self):
         return len(self.unit_index) > 0
+
     def contains_pure_literal(self):
         return  len(self.pure_dict) > 0
 
@@ -35,15 +39,38 @@ class KB:
             return self.get_next_pure_literal()
 
     def get_next_unit_clause(self):
-        return self.clauses_copy[self.unit_index.pop()][0]
+        if self.contains_unit_clauses():
+            a = self.clauses_copy[self.unit_index.pop()][0]
+            return a
+        return None
+
+    def next_unit_clause(self):
+        for x in self.clauses:
+            if len(x) == 1 and x[0] not in self.units:
+                self.units.append(x[0])
+                return x[0]
+        return None
+    
+    def flatten(self, nested):
+        return [item for sublist in nested for item in sublist]
+    
+    def next_pure(self):
+        literals = self.flatten(self.clauses)
+        for p in literals:
+            if p.abs() not in self.pures and -p not in literals:
+                self.pures.append(p.abs())
+                return p
+        return None
+        
 
     def get_next_pure_literal(self):
-        for x in self.pure_dict:
-            if self.pure_dict[x] == 1:
-                self.pure_dict.pop(x)
-            else:
-                self.pure_dict[x] -= 1
-            return x
+        if self.contains_pure_literal():
+            for x in self.pure_dict:
+                if self.pure_dict[x] == 1:
+                    self.pure_dict.pop(x)
+                else:
+                    self.pure_dict[x] -= 1
+                return x
         
 
     def magic(self, clauses):

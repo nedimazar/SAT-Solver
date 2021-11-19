@@ -1,7 +1,9 @@
 from Literal import Literal
 from Model import Model
 from KB import KB
+from Formula import Formula
 import sys
+import random
 sys.settrace
 sys.setrecursionlimit(10**6)
 
@@ -17,10 +19,9 @@ class SATSolver:
         self.ruleset_file = ruleset_file
         self.puzzle_file = puzzle_file
         self.__set_rules_and_puzzle()
-        self.model = Model
         self.clauses = self.merge_sentences(self.ruleset, self.puzzle)
-        #print(self.clauses)
-        self.KB = KB(self.clauses)
+        #self.KB = KB(self.clauses)
+        self.Formula = Formula(self.clauses)
 
     def merge_sentences(self, ruleset, puzzle):
         clauses = [clause for clause in ruleset]
@@ -32,12 +33,6 @@ class SATSolver:
         """
         self.ruleset = self.dimacs_to_list(self.ruleset_file)
         self.puzzle = self.dimacs_to_list(self.puzzle_file)
-        #print(self.ruleset)
-        #print(self.puzzle)
-
-    
-    def __build_indexing(self):
-        self.S = KB(self.clauses)
 
     def dimacs_to_list(self, dimacs_file):
         """Reads a DIMACS file and returns a representation so it can be stored in memory.
@@ -63,64 +58,11 @@ class SATSolver:
         negated = '-' in token
         symbol = token.strip('-')
         return Literal(negated, symbol)
-
-
-    def simplify(self, S: KB, p: Literal):
-        # Delete every clause in S containing p
-        S.clauses = [clause for clause in S.clauses if p not in clause]
-
-        # Delete every occurence in S of -p
-        indexes = []
-        for i in range(0, len(S)):
-            for j in range(0, len(S.clauses[i])):
-                if p and S.clauses[i][j] == -p:
-                    indexes.append([i, j])
-        for i, j in indexes:
-            S.clauses[i].pop(j)
-        return S
-
-    # TODO
-    # see https://www.cs.miami.edu/home/geoff/Courses/CSC648-12S/Content/DPLL.shtml
-    def satisfiable(self, S):
-        if len(S) == 0:
-            return "SAT"
-        while S.contains_unit_clauses() or S.contains_pure_literal():
-            p = S.next_p()
-            if p and p in S.clauses and -p in S.clauses:
-                return "UNSAT"
-            else:
-                S = self.simplify(S, p)
-        if len(S) == 0:
-            return "SAT"
-        p = S.from_shortest_clause()
-        if (self.satisfiable(self.simplify(S, p)) == "SAT"):
-            return "SAT"
-        else:
-            return (self.satisfiable(self.simplify(S, -p)))
-'''
-pick some literal p from a shortest clause in S;
-    if (DPLL(Simplify(S,p))=="satisfiable") { //----Assign it TRUE
-       return("satisfiable");
-    } else {
-       return(DPLL(Simplify(S,~p));           //----Assign it FALSE
-    }
-
-
-
-        S = [] 
-S.append([Literal(), Literal(), Literal()])
-S.append([Literal(), Literal(), Literal(True, 'x')])
-S.append([Literal(), Literal(True, 'x'), Literal()])
-S.append([Literal(), Literal(), Literal()])
-
-
-
-'''
-        
-
-        
-
+    
+    def flatten(self, nested):
+        return [item for sublist in nested.clauses for item in sublist]
+    
 if __name__ == "__main__":
-    #x = SATSolver('dimacs/rulesets/9-rules.txt', 'dimacs/puzzles/sudoku.txt')
-    x = SATSolver('dimacs/rulesets/dummy.txt', 'dimacs/puzzles/dummy.txt')
-    print(x.satisfiable(x.KB))
+    #x = SATSolver('dimacs/rulesets/dummy.txt', 'dimacs/puzzles/dummy.txt')
+    x = SATSolver('dimacs/rulesets/9-rules.txt', 'dimacs/puzzles/sudoku.txt')
+    print(x.Formula.DPLL())

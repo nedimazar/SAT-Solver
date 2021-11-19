@@ -1,23 +1,29 @@
 class Model:
+        def __init__(self, formula, model = None):
+            self.formula = formula
+            if model:
+                self.model = model
+            else:
+                self.model = self.get_model(formula)
+        
+        def __str__(self):
+            return str(self.model)
 
-    def __init__(self):
-        self.__variables = self.generate_variables()
+        def get_model(self, formula):
+            model = {}
+            for literal in self.flatten(formula):
+                if literal.abs() not in model:
+                    model[literal.abs()] = None
+            return model
 
-    #OVERRIDE THIS FOR OTHER PROBLEMS
-    def generate_variables(self):
-        variables = {}
-        for x in range(1, 10):
-            for y in range(1, 10):
-                for v in range(1, 10):
-                    variables[f"{x}{y}{v}"] = None
-        return variables
+        def flatten(self, nested):
+            return [item for sublist in nested for item in sublist]
 
-    def get_variables(self):
-        return self.__variables
-    
-    def push(self, variable, assignment=None):
-        self.__variables[variable] = assignment
-    
-    def flip(self, variable):
-        if variable in self.__variables and self.__variables[variable] is not None:
-            self.__variables[variable] = not self.__variables[variable]
+        def next_unassigned(self):
+            for x in self.model:
+                if self.model[x] == None:
+                    return x
+
+        def union(self, literal):
+            self.model[literal.abs()] = not literal.negated
+            return Model(self.formula, self.model)
