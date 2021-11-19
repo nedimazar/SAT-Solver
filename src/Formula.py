@@ -37,8 +37,9 @@ class Formula:
             if 'True' not in newClause:
                 newF.append(newClause)
 
-        if len(newF) == 1697:
-            print(newF)
+        # The number of clauses goes below 1697 but then it backtracks and gets
+        # stuck
+        print("Number of clauses in formula:", len(newF))
 
         return newF
     
@@ -67,6 +68,8 @@ class Formula:
             print(p)
             return 'SAT'
 
+        #TODO This assignment gets towards the end (We run out of variables
+        # to set, however the solution is not comlete)
         l = p.next_unassigned()
 
         if self.DPLL_recursive(
