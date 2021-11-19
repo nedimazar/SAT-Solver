@@ -20,14 +20,9 @@ class Formula:
     A partial assignment for a formula F is a truth assignment to a subset of the variables of F. For a partial assignment ρ for a CNF formula F, F|ρ denotes the simplified formula obtained by replacing the variables appearing in ρ with their specified values, removing all clauses with at least one TRUE literal, and deleting all occurrences of FALSE literals from the remaining clauses.
     '''
     def simplify(self, formula, literal):
-        newF = copy.deepcopy(formula)
-        # for clause in formula:
-        #     if 'True' not in clause and clause != []:
-        #         newF.append(copy.deepcopy(clause))
-
-        newerF = []
-        for i, clause in enumerate(newF):
-            newerF.append([])
+        newF = []
+        for i, clause in enumerate(formula):
+            newClause = []
             for j, variable in enumerate(clause):
                 if variable.abs() in literal.keys():
                     polarity = literal[variable.abs()]
@@ -35,33 +30,17 @@ class Formula:
                         d = str(not polarity)
                     else:
                         d = str(polarity)
-                    newerF[i].append(d)
+                    if d != 'False':
+                        newClause.append(d)
                 else:
-                    newerF[i].append(variable)
+                    newClause.append(variable)
+            if 'True' not in newClause:
+                newF.append(newClause)
 
-        # for i, clause in enumerate(formula):
-        #     if 'True' in clause:
-        #         formula.pop(i)
-        # for i, clause in enumerate(formula):
-        #     if 'True' in clause:
-        #         formula.pop(i)
+        if len(newF) == 1697:
+            print(newF)
 
-        newestF = []
-        for clause in newerF:
-            if 'True' not in clause and clause != []:
-                newestF.append(copy.deepcopy(clause))
-        
-        finalF = copy.deepcopy(newestF)
-
-        ret = []
-
-        for i, clause in enumerate(finalF):
-            ret.append([])
-            for j, literal in enumerate(clause):
-                if literal != 'False':
-                    ret[i].append(literal)
-        
-        return copy.deepcopy(ret)
+        return newF
     
     def flatten(self, nested):
             return [item for sublist in nested for item in sublist]
