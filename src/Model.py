@@ -23,7 +23,9 @@ class Model:
             for x in self.model:
                 if self.model[x] == None:
                     return x
+                    
 
         def union(self, literal):
-            self.model[literal.abs()] = not literal.negated
+            if literal:
+                self.model[literal.abs()] = not literal.negated
             return Model(self.formula, self.model)

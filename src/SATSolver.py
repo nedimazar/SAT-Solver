@@ -64,5 +64,7 @@ class SATSolver:
     
 if __name__ == "__main__":
     #x = SATSolver('dimacs/rulesets/dummy.txt', 'dimacs/puzzles/dummy.txt')
-    x = SATSolver('dimacs/rulesets/9-rules.txt', 'dimacs/puzzles/sudoku.txt')
+    x = SATSolver('dimacs/rulesets/9-rules.txt', 'dimacs/puzzles/ezsudoku.txt')
+    #x = SATSolver('dimacs/puzzles/sudoku.txt', 'dimacs/puzzles/sudoku.txt')
+
     print(x.Formula.DPLL())
